@@ -26,7 +26,6 @@ const verifyMiddleWare = async (req, res, next) => {
   } catch (err) {
     req.user = null
     return res.json({ success: false, message: "there was an error: " + err });
-    next()
   }
 }; 
 

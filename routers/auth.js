@@ -52,7 +52,7 @@ router.get("/home", verifyMiddleWare, async (req, res) => {
 })
 router.post("/login", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({ message: "User doesn't Exist", success: false });
@@ -84,6 +84,7 @@ router.post("/login", async (req, res) => {
 router.get("/verify", verifyMiddleWare, async (req, res) => {
   return res.status(200).json({success: true, user: req.user})
 })
+
 setTimeout(async () => {
   const unVerifiedUsers = await User.find({ verified: false });
   unVerifiedUsers.forEach(async (user) => {

@@ -75,10 +75,12 @@ const propertySchema = new mongoose.Schema(
     notes: {
       type: String,
     },
-    images: {
-      type: [String],
-      default: [],
-    },
+    images: [
+      {
+        url: { type: String },
+        public_id: { type: String }
+      }
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
