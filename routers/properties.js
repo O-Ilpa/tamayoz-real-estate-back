@@ -1,7 +1,7 @@
 import express from "express";
 import Property from "../models/Property.js";
 import verifyMiddleWare from "./verifyMiddleWare.js";
-import cloudinary from "cloudinary";
+import cloudinary from "../utils/cloudinary.js";
 const app = express();
 
 app.use(express.json());
@@ -72,6 +72,26 @@ router.post("/add", verifyMiddleWare, async (req, res) => {
 router.get("/get", async (req, res) => {
   try {
     const properties = await Property.find({});
+    const {
+      propertyId,
+      price,
+      images,
+      yearBuilt,
+      type,
+      category,
+      agent,
+      area,
+      size,
+      floor,
+      isLastFloor,
+      finishing,
+      rooms,
+      reception,
+      bathrooms,
+      meters,
+      elevators,
+      notes,
+    } = properties;
     return res.status(200).json({
       success: true,
       message: "Properties Fetched Succefully",
@@ -81,13 +101,16 @@ router.get("/get", async (req, res) => {
     res.json({ success: true, message: "Couldn't Fetch Properties: " + err });
   }
 });
-router.delete("/del/:id", async (req, res) => {
+router.delete("/del/:id", verifyMiddleWare, async (req, res) => {
   try {
+    const { deletedImages } = req.body;
+    if (deletedImages && deletedImages.length != 0) {
+      for (const public_id of deletedImages) {
+        await cloudinary.uploader.destroy(public_id);
+      }
+    }
     const delPropertyId = req.params.id;
-    console.time("mongo-delete");
     await Property.findByIdAndDelete(delPropertyId);
-    console.timeEnd("mongo-delete");
-
     res.json({ success: true, message: "property deleted succefully" });
   } catch (err) {
     res.json({ success: false, message: "err deleting property: " + err });
@@ -148,6 +171,23 @@ router.put("/edit/:id", async (req, res) => {
     res.json({ success: true, message: "updated Succefully" });
   } catch (err) {
     res.json({ success: false, message: "err updating property: " + err });
+  }
+});
+router.get("/show/:propertyId", async (req, res) => {
+  try {
+    const propertyId = req.params.propertyId;
+    const property = await Property.findOne({ propertyId });
+    if (property && property !== null) {
+      res.json({
+        success: false,
+        message: "found property",
+        property: property,
+      });
+    } else {
+      res.status(200).json({ success: false, message: "404 Not Found" });
+    }
+  } catch (err) {
+    res.json({ success: false, message: err });
   }
 });
 export default router;

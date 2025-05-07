@@ -1,4 +1,3 @@
-// utils/cloudinary.js or anywhere near your config code
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from 'dotenv'
 if (process.env.NODE_ENV !== "production") {
