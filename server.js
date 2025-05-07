@@ -7,6 +7,7 @@ import authRouter from "./routers/auth.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import propertyRouter from "./routers/properties.js";
+import Property from "./models/Property.js"
 const app = express();
 
 app.use(express.json());
@@ -27,8 +28,9 @@ app.use("/api/auth", authRouter);
 app.use("/api/properties", propertyRouter);
 
 mongoose.connect(process.env.DATABASE_URL);
-const db = mongoose.connection;
+const db =  mongoose.connection;
 db.on("error", (error) => console.error(error.name));
 db.once("open", () => console.log("connected to mongoose"));
-
+const properties = await Property.find({})
+console.log(properties.map((property) => property.images)) 
 app.listen(process.env.PORT || 5000);

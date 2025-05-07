@@ -32,7 +32,7 @@ router.post("/add", verifyMiddleWare, async (req, res) => {
 
     const newProperty = new Property({
       creatorId: req.user.id,
-      propertyId: propertyId,
+      propertyId: propertyId.toUpperCase(),
       price: parseInt(price),
       images: images.map((image) => ({
         url: image.url,
@@ -72,36 +72,29 @@ router.post("/add", verifyMiddleWare, async (req, res) => {
 router.get("/get", async (req, res) => {
   try {
     const properties = await Property.find({});
-    const {
-      propertyId,
-      price,
-      images,
-      yearBuilt,
-      type,
-      category,
-      agent,
-      area,
-      size,
-      floor,
-      isLastFloor,
-      finishing,
-      rooms,
-      reception,
-      bathrooms,
-      meters,
-      elevators,
-      notes,
-    } = properties;
     return res.status(200).json({
       success: true,
       message: "Properties Fetched Succefully",
-      properties: properties,
+      properties: properties.map((property) => {
+        return {
+          _id: property._id,
+          propertyId: property.propertyId,
+          price: property.price,
+          images: property.images,
+          category: property.category,
+          area: property.area,
+          size: property.size,
+          rooms: property.rooms,
+          bathrooms: property.bathrooms,
+        };
+      }),
     });
   } catch (err) {
     res.json({ success: true, message: "Couldn't Fetch Properties: " + err });
   }
 });
 router.delete("/del/:id", verifyMiddleWare, async (req, res) => {
+  console.time("deleting Property")
   try {
     const { deletedImages } = req.body;
     if (deletedImages && deletedImages.length != 0) {
@@ -112,9 +105,11 @@ router.delete("/del/:id", verifyMiddleWare, async (req, res) => {
     const delPropertyId = req.params.id;
     await Property.findByIdAndDelete(delPropertyId);
     res.json({ success: true, message: "property deleted succefully" });
-  } catch (err) {
+  } catch (err) { 
+    console.log(err)
     res.json({ success: false, message: "err deleting property: " + err });
   }
+  console.timeEnd("deleting Property")
 });
 router.put("/edit/:id", async (req, res) => {
   try {
@@ -146,7 +141,7 @@ router.put("/edit/:id", async (req, res) => {
     }
     const { id } = req.params;
     const updatedProperty = await Property.findByIdAndUpdate(id, {
-      propertyId,
+      propertyId: propertyId.toUpperCase(),
       price,
       images: images.map((image) => ({
         url: image.url,
@@ -175,11 +170,13 @@ router.put("/edit/:id", async (req, res) => {
 });
 router.get("/show/:propertyId", async (req, res) => {
   try {
-    const propertyId = req.params.propertyId;
-    const property = await Property.findOne({ propertyId });
+    const propertyId = req.params.propertyId.toUpperCase();
+    console.log(propertyId);
+    const property = await Property.findOne({ propertyId: propertyId });
+    console.log(property);
     if (property && property !== null) {
       res.json({
-        success: false,
+        success: true,
         message: "found property",
         property: property,
       });
@@ -190,4 +187,5 @@ router.get("/show/:propertyId", async (req, res) => {
     res.json({ success: false, message: err });
   }
 });
+
 export default router;
