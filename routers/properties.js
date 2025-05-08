@@ -2,6 +2,7 @@ import express from "express";
 import Property from "../models/Property.js";
 import verifyMiddleWare from "./verifyMiddleWare.js";
 import cloudinary from "../utils/cloudinary.js";
+import mappedData from "../extractXlsx.js";
 const app = express();
 
 app.use(express.json());
@@ -94,7 +95,7 @@ router.get("/get", async (req, res) => {
   }
 });
 router.delete("/del/:id", verifyMiddleWare, async (req, res) => {
-  console.time("deleting Property")
+  console.time("deleting Property");
   try {
     const { deletedImages } = req.body;
     if (deletedImages && deletedImages.length != 0) {
@@ -105,11 +106,11 @@ router.delete("/del/:id", verifyMiddleWare, async (req, res) => {
     const delPropertyId = req.params.id;
     await Property.findByIdAndDelete(delPropertyId);
     res.json({ success: true, message: "property deleted succefully" });
-  } catch (err) { 
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     res.json({ success: false, message: "err deleting property: " + err });
   }
-  console.timeEnd("deleting Property")
+  console.timeEnd("deleting Property");
 });
 router.put("/edit/:id", async (req, res) => {
   try {
@@ -187,5 +188,51 @@ router.get("/show/:propertyId", async (req, res) => {
     res.json({ success: false, message: err });
   }
 });
+router.get("/download", async (req, res) => {
+  const properties = await Property.find({});
+  res.json({
+    success: true,
+    message: "all Properties fetched",
+    properties: properties,
+  });
+});
+// const uploadExcel = async () => {
+//   mappedData.map(async (property) => {
+//     console.log('Property data:', property);
+
+//     const agent = property.agent ? property.agent.trim() : "Unknown Agent";
+
+//     const type = property.type && (property.type.trim() === 'إيجار' || property.type.trim() === 'تمليك')
+//       ? property.type.trim()
+//       : "تمليك";
+
+//     const finishing = property.finishing ? property.finishing.trim() : "غير متوفر";
+
+//     const newProperty = new Property({
+//       propertyId: property.propertyId.toUpperCase(),
+//       price: isNaN(property.price) ? property.price : parseInt(property.price),
+//       images: property.images || [],
+//       yearBuilt: property.yearBuilt === "غير متوفر" ? property.yearBuilt : parseInt(property.yearBuilt),
+//       type: type,
+//       category: property.category,
+//       agent: agent,
+//       area: property.area,
+//       size: isNaN(property.size) ? property.size : parseInt(property.size),
+//       floor: property.floor,
+//       isLastFloor: property.isLastFloor,
+//       finishing: finishing,
+//       rooms: isNaN(property.rooms) ? property.rooms : parseInt(property.rooms),
+//       reception: isNaN(property.reception) ? property.reception : parseInt(property.reception),
+//       bathrooms: isNaN(property.bathrooms) ? property.bathrooms : parseInt(property.bathrooms),
+//       meters: property.meters,
+//       elevators: isNaN(property.elevators) ? property.elevators : parseInt(property.elevators),
+//       notes: property.notes,
+//     });
+
+//     await newProperty.save();
+//   });
+// };
+
+// uploadExcel();
 
 export default router;

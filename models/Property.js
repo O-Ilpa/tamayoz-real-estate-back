@@ -4,7 +4,6 @@ const propertySchema = new mongoose.Schema(
   {
     creatorId: {
       type: String,
-      required: true,
     },
     propertyId: {
       type: String,
@@ -12,7 +11,7 @@ const propertySchema = new mongoose.Schema(
       unique: true,
     },
     yearBuilt: {
-      type: String,
+      type: mongoose.mongoose.Schema.Types.Mixed,  // Can accept either String or Number
       required: true,
     },
     category: {
@@ -33,11 +32,11 @@ const propertySchema = new mongoose.Schema(
       required: true,
     },
     size: {
-      type: Number,
+      type: mongoose.mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     floor: {
-      type: Number,
+      type: mongoose.mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     isLastFloor: {
@@ -45,7 +44,7 @@ const propertySchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     finishing: {
@@ -53,15 +52,15 @@ const propertySchema = new mongoose.Schema(
       required: true,
     },
     rooms: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     reception: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     bathrooms: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     meters: {
@@ -69,7 +68,7 @@ const propertySchema = new mongoose.Schema(
       required: true,
     },
     elevators: {
-      type: Number,
+      type: mongoose.Schema.Types.Mixed,  // Accepts both Number or String
       required: true,
     },
     notes: {
@@ -78,8 +77,8 @@ const propertySchema = new mongoose.Schema(
     images: [
       {
         url: { type: String },
-        public_id: { type: String }
-      }
+        public_id: { type: String },
+      },
     ],
     createdAt: {
       type: Date,
